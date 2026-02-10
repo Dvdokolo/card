@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Arising Invitation | Traditional Marriage Ceremony</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Marcellus&family=Montserrat:wght@300;400;500&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #f5e8d9 0%, #e8d4c1 100%);
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    /* Main container */
+    .main-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Scene container - START CENTERED */
+    .scene-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1500px;
+      transition: width 0.5s ease;
+    }
+    
+    @media (min-width: 769px) {
+      .scene-container.sidebar-active {
+        width: 60%;
+      }
+    }
+    
+    /* Details sidebar - HIDDEN INITIALLY */
+    .details-sidebar {
+      position: absolute;
+      top: 0;
+      right: -100%;
+      width: 35%;
+      height: 100%;
+      background: #faf7f3;
+      border-left: 3px solid #8d6e63;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40px;
+      opacity: 0;
+      transition: right 0.5s ease, opacity 0.5s ease;
+      overflow-y: auto;
+      box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+      z-index: 90;
+    }
+    
+    .details-sidebar.active {
+      right: 0;
+      opacity: 1;
+    }
+    
+    @media (max-width: 768px) {
+      .details-sidebar {
+        width: 100%;
+        right: -100%;
+      }
+      
+      .details-sidebar.active {
+        right: 0;
+      }
+    }
+    
+    /* Responsive envelope */
+    .envelope {
+      position: absolute;
+      width: 500px;
+      height: 300px;
+      max-width: 80%;
+      z-index: 20;
+      cursor: pointer;
+      filter: drop-shadow(0 15px 30px rgba(0,0,0,0.15));
+      transform: translateX(0); /* Start centered */
+    }
+    
+    @media (max-width: 1024px) {
+      .envelope {
+        height: 250px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .envelope {
+        height: 200px;
+        width: 350px;
+      }
+    }
+    
+    /* Envelope Body */
+    .envelope-body {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #d7ccc8 0%, #bcaaa4 100%);
+      border-radius: 12px;
+      border: 3px solid #8d6e63;
+      box-shadow: 
+        inset 0 0 0 1px rgba(255,255,255,0.3),
+        0 8px 20px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+    
+    .envelope-body::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      right: 8px;
+      bottom: 8px;
+      border: 1px solid rgba(176, 141, 87, 0.3);
+      border-radius: 6px;
+      pointer-events: none;
+    }
+    
+    /* Envelope Front */
+    .envelope-front {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #a1887f 0%, #8d6e63 100%);
+      border-radius: 12px;
+      border: 3px solid #6d4c41;
+      z-index: 30;
+      box-shadow: 
+        inset 0 0 0 1px rgba(255,255,255,0.2),
+        0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Shorter Square Flap */
+    .envelope-flap {
+      position: absolute;
+      width: 100%;
+      height: 35%;
+      background: linear-gradient(to bottom, #5d4037 0%, #4e342e 100%);
+      border: 3px solid #6d4c41;
+      border-bottom: none;
+      border-radius: 12px 12px 0 0;
+      transform-origin: top;
+      z-index: 40;
+      top: 0;
+      box-shadow: 
+        0 -2px 10px rgba(0,0,0,0.2),
+        inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    
+    .envelope-flap::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 20%;
+      right: 20%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #b76e79, transparent);
+      border-radius: 2px;
+    }
+    
+    /* Card Container */
+    .card-container {
+      position: absolute;
+      width: 350px;
+      height: 500px;
+      z-index: 15;
+      opacity: 0;
+      transform: rotate(90deg);
+      transform-origin: center center;
+    }
+    
+    @media (max-width: 1024px) {
+      .card-container {
+        width: 300px;
+        height: 425px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .card-container {
+        width: 260px;
+        height: 370px;
+      }
+    }
+    
+    /* Card Image */
+    .card-image {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      display: block;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    /* Instruction */
+    .instruction {
+      position: absolute;
+      bottom: 40px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #5d4037;
+      font-size: 18px;
+      font-style: italic;
+      z-index: 55;
+      transition: opacity 0.5s;
+      opacity: 1;
+      pointer-events: none;
+      font-family: 'Marcellus', serif;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+    }
+    
+    @media (max-width: 768px) {
+      .instruction {
+        font-size: 16px;
+        bottom: 20px;
+      }
+    }
+    
+    /* Flip Button */
+    .flip-btn {
+      position: absolute;
+     
+      transform: translateX(-50%);
+      background: linear-gradient(145deg, #5d4037 0%, #4e342e 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      transition: all 0.3s;
+      z-index: 70;
+      opacity: 0;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    @media (min-width: 768px) {
+      .flip-btn {
+        font-size: 15px;
+        padding: 14px 28px;
+      }
+    }
+    
+    .flip-btn.visible {
+      opacity: 1;
+    }
+    
+    .flip-btn:hover {
+      background: linear-gradient(145deg, #4e342e 0%, #3e2723 100%);
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+    
+    /* Action Button in Sidebar */
+    .sidebar-action-btn {
+      padding: 16px 30px;
+      border: none;
+      border-radius: 50px;
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      margin-top: 25px;
+      background: linear-gradient(145deg, #8d6e63 0%, #6d4c41 100%);
+      color: white;
+      box-shadow: 0 6px 20px rgba(141, 110, 99, 0.3);
+    }
+    
+    .sidebar-action-btn:hover {
+      background: linear-gradient(145deg, #7d5e53 0%, #5d3c31 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(141, 110, 99, 0.4);
+    }
+    
+    /* RSVP Button */
+    .rsvp-btn {
+      background: linear-gradient(145deg, #b76e79 0%, #a76b79 100%);
+      box-shadow: 0 6px 20px rgba(183, 110, 121, 0.3);
+    }
+    
+    .rsvp-btn:hover {
+      background: linear-gradient(145deg, #a75e69 0%, #975b69 100%);
+      box-shadow: 0 8px 25px rgba(183, 110, 121, 0.4);
+    }
+    
+    /* Close sidebar button */
+    .close-sidebar {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #5d4037;
+      cursor: pointer;
+      z-index: 91;
+    }
+    
+    /* Mobile menu button */
+    .mobile-menu-btn {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      background: linear-gradient(145deg, #5d4037 0%, #4e342e 100%);
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 50px;
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      z-index: 80;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    @media (max-width: 768px) {
+      .mobile-menu-btn {
+        display: flex;
+      }
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 90%;
+      width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+      transform: translateY(20px);
+      transition: transform 0.3s;
+    }
+    
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+    }
+    
+    .success-modal {
+      text-align: center;
+    }
+    
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(145deg, #4CAF50 0%, #2E7D32 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      color: white;
+      font-size: 36px;
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #5d4037;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    
+    /* Loading text */
+    .loading-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 16px;
+      color: #5d4037;
+      text-align: center;
+      font-style: italic;
+      z-index: 16;
+      font-family: 'Marcellus', serif;
+    }
+    
+    /* Decorative corner accents */
+    .envelope-corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      z-index: 25;
+    }
+    
+    .corner-tl {
+      top: 10px;
+      left: 10px;
+      border-top: 2px solid #b76e79;
+      border-left: 2px solid #b76e79;
+      border-radius: 4px 0 0 0;
+    }
+    
+    .corner-tr {
+      top: 10px;
+      right: 10px;
+      border-top: 2px solid #b76e79;
+      border-right: 2px solid #b76e79;
+      border-radius: 0 4px 0 0;
+    }
+    
+    .corner-bl {
+      bottom: 10px;
+      left: 10px;
+      border-bottom: 2px solid #b76e79;
+      border-left: 2px solid #b76e79;
+      border-radius: 0 0 0 4px;
+    }
+    
+    .corner-br {
+      bottom: 10px;
+      right: 10px;
+      border-bottom: 2px solid #b76e79;
+      border-right: 2px solid #b76e79;
+      border-radius: 0 0 4px 0;
+    }
+    
+    /* Ambient glow effect */
+    .envelope-glow {
+      position: absolute;
+      width: 120%;
+      height: 120%;
+      background: radial-gradient(circle at center, rgba(183,110,121,0.1) 0%, transparent 70%);
+      border-radius: 16px;
+      z-index: 5;
+      pointer-events: none;
+    }
+    
+    /* Overlay for mobile when sidebar is open */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 85;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+    
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- Main Container -->
+  <div class="main-container">
+    
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Mobile menu button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i> Details
+    </button>
+    
+    <!-- Scene container - START FULL WIDTH, CENTERED -->
+    <div class="scene-container" id="sceneContainer">
+      
+      <!-- Ambient Glow -->
+      <div class="envelope-glow"></div>
+      
+      <!-- Envelope - STARTS CENTERED -->
+      <div class="envelope" id="envelope">
+        <!-- Decorative Corners -->
+        <div class="envelope-corner corner-tl"></div>
+        <div class="envelope-corner corner-tr"></div>
+        <div class="envelope-corner corner-bl"></div>
+        <div class="envelope-corner corner-br"></div>
+        
+        <!-- Envelope Body -->
+        <div class="envelope-body"></div>
+        
+        <!-- Envelope Front -->
+        <div class="envelope-front"></div>
+        
+        <!-- Elegant Square Flap -->
+        <div class="envelope-flap" id="flap"></div>
+      </div>
+      
+      <!-- Card Container -->
+      <div class="card-container" id="cardContainer">
+        <img src="card.png" alt="Invitation Card" class="card-image" id="cardImage">
+        <div class="loading-text" id="loadingText">Loading invitation...</div>
+      </div>
+      
+      <!-- Instruction -->
+      <div class="instruction" id="instruction">
+        Click the envelope flap to open
+      </div>
+      
+      <!-- Flip Button -->
+      <button class="flip-btn top-[30px] md:top-[10px] lg:top-[30px] md:left-[10%]" id="flipBtn">
+        <i class="fas fa-sync-alt mr-2"></i> Flip Card
+      </button>
+    </div>
+    
+    <!-- Details sidebar - HIDDEN INITIALLY -->
+    <div class="details-sidebar" id="detailsSidebar">
+      <button class="close-sidebar" onclick="toggleSidebar()">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div style="text-align: center; margin-bottom: 40px;">
+        <h3 style="font-family: 'Cinzel', serif; font-size: 28px; color: #4e342e; margin-bottom: 15px; letter-spacing: 1px;">
+          TRADITIONAL MARRIAGE CEREMONY
+        </h3>
+        <div style="width: 120px; height: 2px; background: linear-gradient(90deg, transparent, #8d6e63, transparent); margin: 0 auto;"></div>
+      </div>
+      
+      <!-- Save the Date -->
+      <div style="background: #f5f1eb; padding: 30px; border-radius: 12px; margin-bottom: 30px; text-align: center; border: 1px solid #e0d6d0;">
+        <h4 style="font-family: 'Cinzel', serif; font-size: 24px; color: #5d4037; margin-bottom: 20px;">
+          SAVE THE DATE
+        </h4>
+        <p style="font-family: 'Cinzel', serif; font-size: 36px; color: #4e342e; font-weight: bold; margin-bottom: 15px;">
+          15.02.25
+        </p>
+        <p style="font-family: 'Marcellus', serif; font-size: 22px; color: #5d4037; margin-bottom: 20px;">
+          LAGOS, NIGERIA
+        </p>
+        <p style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #795548;">
+          <i class="fas fa-clock mr-2"></i> 4:00 PM onwards
+        </p>
+      </div>
+      
+      <!-- Quick Info -->
+      <div style="margin-bottom: 30px;">
+        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+          <div style="width: 40px; height: 40px; background: #5d4037; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+            <i class="fas fa-calendar-alt" style="color: white;"></i>
+          </div>
+          <div>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #4e342e; font-weight: 500;">Saturday, February 15, 2025</p>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+          <div style="width: 40px; height: 40px; background: #5d4037; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+            <i class="fas fa-map-marker-alt" style="color: white;"></i>
+          </div>
+          <div>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #4e342e; font-weight: 500;">Lagos, Nigeria</p>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 14px; color: #795548;">Traditional Venue</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Action Buttons in Sidebar -->
+      <button class="sidebar-action-btn" id="viewDetailsBtn" onclick="openModal('detailsModal')">
+        <i class="fas fa-info-circle"></i> View Full Details
+      </button>
+      
+      <button class="sidebar-action-btn rsvp-btn" id="rsvpBtn" style="margin-top: 15px;" onclick="openModal('successModal')">
+        <i class="fas fa-check-circle"></i> RSVP Now
+      </button>
+    </div>
+  </div>
+
+  <!-- Event Details Modal -->
+  <div class="modal-overlay" id="detailsModal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('detailsModal')">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h3 style="font-family: 'Cinzel', serif; font-size: 28px; color: #4e342e; margin-bottom: 15px; letter-spacing: 1px;">
+          FULL EVENT DETAILS
+        </h3>
+        <div style="width: 120px; height: 2px; background: linear-gradient(90deg, transparent, #8d6e63, transparent); margin: 0 auto;"></div>
+      </div>
+      
+      <!-- Complete Details -->
+      <div style="margin-bottom: 25px;">
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+          <div style="width: 40px; height: 40px; background: #5d4037; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+            <i class="fas fa-map-marker-alt" style="color: white;"></i>
+          </div>
+          <div>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #4e342e; font-weight: 500;">Lagos, Nigeria</p>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 14px; color: #795548;">Traditional Ceremony Venue</p>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 13px; color: #a1887f; margin-top: 5px;">
+              Exact venue details provided upon RSVP confirmation
+            </p>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+          <div style="width: 40px; height: 40px; background: #5d4037; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+            <i class="fas fa-calendar-alt" style="color: white;"></i>
+          </div>
+          <div>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #4e342e; font-weight: 500;">Saturday, February 15, 2025</p>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 14px; color: #795548;">4:00 PM - Traditional Ceremony</p>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 14px; color: #795548;">7:00 PM - Reception & Celebrations</p>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+          <div style="width: 40px; height: 40px; background: #5d4037; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+            <i class="fas fa-tshirt" style="color: white;"></i>
+          </div>
+          <div>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #4e342e; font-weight: 500;">Dress Code</p>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 14px; color: #795548;">Traditional & Elegant Attire</p>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 13px; color: #a1887f; margin-top: 5px;">
+              Cultural traditional wear or formal elegant attire
+            </p>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+          <div style="width: 40px; height: 40px; background: #5d4037; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">
+            <i class="fas fa-gift" style="color: white;"></i>
+          </div>
+          <div>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #4e342e; font-weight: 500;">Gifts</p>
+            <p style="font-family: 'Montserrat', sans-serif; font-size: 14px; color: #795548;">Traditional gifts or blessings appreciated</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Note -->
+      <div style="background: #f0ebe6; padding: 20px; border-radius: 10px; border: 1px solid #e0d6d0; text-align: center;">
+        <p style="font-family: 'Marcellus', serif; font-size: 16px; color: #795548; font-style: italic;">
+          <i class="fas fa-envelope mr-2"></i> Personal invitation with exact details to follow upon RSVP
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- RSVP Success Modal -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-content success-modal">
+      <button class="close-modal" onclick="closeModal('successModal')">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="success-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      
+      <h3 style="font-family: 'Cinzel', serif; font-size: 28px; color: #4e342e; margin-bottom: 15px;">
+        RSVP Successful!
+      </h3>
+      
+      <p style="font-family: 'Montserrat', sans-serif; font-size: 16px; color: #5d4037; margin-bottom: 25px; line-height: 1.6;">
+        Thank you for confirming your attendance! 
+        We're delighted you'll be joining us for this special celebration.
+      </p>
+      
+      <div style="background: #f0ebe6; padding: 20px; border-radius: 10px; margin-bottom: 25px; border: 1px solid #e0d6d0;">
+        <p style="font-family: 'Marcellus', serif; font-size: 18px; color: #795548; font-style: italic;">
+          See you in Lagos on February 15, 2025!
+        </p>
+      </div>
+      
+      <button class="sidebar-action-btn" onclick="closeModal('successModal')" style="margin: 0 auto;">
+        <i class="fas fa-check"></i> Got It!
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // DOM Elements
+    const envelope = document.getElementById('envelope');
+    const flap = document.getElementById('flap');
+    const cardContainer = document.getElementById('cardContainer');
+    const cardImage = document.getElementById('cardImage');
+    const instruction = document.getElementById('instruction');
+    const flipBtn = document.getElementById('flipBtn');
+    const detailsSidebar = document.getElementById('detailsSidebar');
+    const loadingText = document.getElementById('loadingText');
+    const sceneContainer = document.getElementById('sceneContainer');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const viewDetailsBtn = document.getElementById('viewDetailsBtn');
+    const rsvpBtn = document.getElementById('rsvpBtn');
+    
+    // Animation State
+    let isOpened = false;
+    let sidebarVisible = false;
+    let animationCompleted = false;
+    
+    // Check if card image loads
+    cardImage.onload = function() {
+      loadingText.style.display = 'none';
+      console.log('Card image loaded successfully');
+    };
+    
+    cardImage.onerror = function() {
+      loadingText.textContent = 'Card image not found. Please check card.png is in the same folder.';
+      loadingText.style.color = '#d32f2f';
+      console.error('Card image failed to load');
+    };
+    
+    // Start animation when envelope is clicked
+    envelope.addEventListener('click', () => {
+      if (isOpened) return;
+      isOpened = true;
+      
+      console.log('Starting GSAP animation...');
+      
+      const tl = gsap.timeline();
+      
+      // 1. Open the flap
+      tl.to(flap, { 
+        rotateX: -180, 
+        duration: 0.6, 
+        ease: "power2.inOut" 
+      });
+      
+      // 2. The Rise
+      tl.to(cardContainer, { 
+        y: -180,
+        opacity: 1, 
+        duration: 0.8, 
+        ease: "power2.out" 
+      }, "-=0.2");
+      
+      // 3. The Snap to Center
+      tl.to(cardContainer, { 
+        rotation: 0, 
+        y: 0, 
+        scale: 1.1, 
+        zIndex: 100,
+        duration: 0.7, 
+        ease: "back.out(1.7)" 
+      });
+      
+      // 4. Envelope moves to the LEFT side (before sidebar appears)
+      tl.to(envelope, {
+        x: window.innerWidth <= 768 ? -100 : -180,
+        scale: 0.85,
+        opacity: 0.8,
+        rotateY: 15,
+        duration: 0.8,
+        ease: "power2.out"
+      }, "-=0.3");
+      
+      // 5. Show Flip Button
+      tl.to(flipBtn, { 
+        opacity: 1, 
+        duration: 0.5 
+      });
+      
+      // 6. Update instruction
+      tl.to(instruction, {
+        textContent: "Card revealed!",
+        opacity: 1,
+        duration: 0.3
+      }, "-=0.5");
+      
+      // 7. Show sidebar AFTER envelope has moved
+      tl.call(() => {
+        animationCompleted = true;
+        // On desktop, show sidebar immediately
+        if (window.innerWidth > 768) {
+          showSidebar();
+        }
+        // On mobile, show the menu button
+        if (window.innerWidth <= 768) {
+          mobileMenuBtn.style.opacity = '1';
+        }
+      });
+    });
+    
+    // Flip Button
+    flipBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      gsap.to(cardContainer, { 
+        rotateY: "+=360", 
+        duration: 1, 
+        ease: "power2.inOut" 
+      });
+    });
+    
+    // Toggle sidebar
+    function toggleSidebar() {
+      if (!animationCompleted) return;
+      
+      sidebarVisible = !sidebarVisible;
+      detailsSidebar.classList.toggle('active', sidebarVisible);
+      sidebarOverlay.classList.toggle('active', sidebarVisible);
+      
+      if (window.innerWidth > 768) {
+        sceneContainer.classList.toggle('sidebar-active', sidebarVisible);
+      } else {
+        // On mobile, dim the background
+        sceneContainer.style.opacity = sidebarVisible ? '0.3' : '1';
+        document.body.style.overflow = sidebarVisible ? 'hidden' : 'hidden';
+      }
+      
+      // Update menu button text
+      if (window.innerWidth <= 768) {
+        mobileMenuBtn.innerHTML = sidebarVisible ? 
+          '<i class="fas fa-times"></i> Close' : 
+          '<i class="fas fa-bars"></i> Details';
+      }
+    }
+    
+    // Show sidebar (called after animation)
+    function showSidebar() {
+      if (window.innerWidth > 768) {
+        sidebarVisible = true;
+        detailsSidebar.classList.add('active');
+        sceneContainer.classList.add('sidebar-active');
+      }
+    }
+    
+    // Modal Functions
+    function openModal(modalId) {
+      if (window.innerWidth <= 768) {
+        toggleSidebar(); // Close sidebar on mobile first
+        setTimeout(() => {
+          document.getElementById(modalId).classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }, 300);
+      } else {
+        document.getElementById(modalId).classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+    
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // Close modals when clicking outside
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          closeModal(modal.id);
+        }
+      });
+    });
+    
+    // Initial instruction fade in
+    setTimeout(() => {
+      instruction.style.transition = 'opacity 0.5s';
+      instruction.style.opacity = '1';
+      console.log('Page loaded - click the envelope to start');
+    }, 500);
+    
+    // Disable all scrolling on main page
+    document.addEventListener('wheel', (e) => {
+      if (!document.querySelector('.modal-overlay.active')) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+    
+    document.addEventListener('touchmove', (e) => {
+      if (!document.querySelector('.modal-overlay.active')) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+    
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768 && animationCompleted) {
+        // On desktop, ensure sidebar is visible if animation completed
+        showSidebar();
+        mobileMenuBtn.style.display = 'none';
+      } else if (window.innerWidth <= 768) {
+        // On mobile, hide desktop sidebar behavior
+        sceneContainer.classList.remove('sidebar-active');
+        detailsSidebar.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+        sceneContainer.style.opacity = '1';
+        mobileMenuBtn.style.display = 'flex';
+        if (animationCompleted) {
+          mobileMenuBtn.style.opacity = '1';
+        }
+      }
+    });
+    
+    // Initialize mobile menu button
+    mobileMenuBtn.style.opacity = '0';
+    mobileMenuBtn.style.transition = 'opacity 0.5s';
+  </script>
+</body>
+</html>
